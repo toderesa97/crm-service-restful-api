@@ -13,4 +13,6 @@ public interface DatabasePersonRepository extends JpaRepository<Person,String> {
 
     Person findByUsername(String username);
 
+    Person findByToken(String token);
+
 }

@@ -35,18 +35,27 @@ public class PersonController {
         return new Response(402, "Could not verify the provided credentials");
     }
 
-    @RequestMapping(method=RequestMethod.POST, value="/api/people")
+    @RequestMapping(method=RequestMethod.POST, value="/api/people/add")
     public Response insert(@RequestBody Request request) throws NoSuchAlgorithmException {
+
+        if (request.getToken() == null) {
+            return new Response(400, "Forbidden");
+        }
         if (! action.isAdmin(request.getToken()) ) {
             return new Response(400, "Forbidden");
         }
-
         if ( action.userExist(request.getPerson().getUsername()) ) {
             return new Response(350, "Username already in use");
         }
-        request.getPerson().setPassword(CryptoUtility.getDigest("SHA-256", request.getPerson().getPassword()));
-        action.insert(request.getPerson());
-        return new Response(200, "OK", request.getPerson());
+        Person personToBeAdded = request.getPerson();
+        personToBeAdded.setPassword(CryptoUtility.getDigest("SHA-256", request.getPerson().getPassword()));
+        personToBeAdded.setLast_person_who_modified(action.findByToken(request.getToken()).getUsername());
+
+        if (action.insert(personToBeAdded)) {
+            return new Response(200, "OK", request.getPerson());
+        } else {
+            return new Response(500, "Error whilst inserting", null);
+        }
     }
 
     @RequestMapping(method=RequestMethod.POST, value="/api/people/remove")

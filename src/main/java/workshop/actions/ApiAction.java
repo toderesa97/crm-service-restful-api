@@ -24,12 +24,12 @@ public class ApiAction {
         return dbRepo.findAll();
     }
 
-    public void insert (Person person) {
-        dbRepo.save(person);
+    public boolean insert (Person person) {
+        return dbRepo.save(person) != null;
     }
 
     public void remove(String username) {
-        dbRepo.delete(new Person(username, "", ""));
+        dbRepo.delete(new Person(username));
     }
 
     public Person getPerson(String username) {
@@ -52,6 +52,10 @@ public class ApiAction {
         }
     }
 
+    public Person findByToken (String token) {
+        return dbRepo.findByToken(token);
+    }
+
     public boolean userExist(String username) {
         return dbRepo.exists(username);
     }
@@ -64,8 +68,8 @@ public class ApiAction {
     }
 
     public boolean isAdmin(String token) {
-        String adminToken = getToken("admin");
-        return adminToken != null && adminToken.equals(token) && !adminToken.isEmpty();
+        Person person = findByToken (token);
+        return person != null && person.isAdmin();
     }
 
 }

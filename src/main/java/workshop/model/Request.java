@@ -1,6 +1,7 @@
 package workshop.model;
 
 public class Request {
+    // every request must have a token. This serves for authenticating a user!
     private String token;
     private Person person;
 
