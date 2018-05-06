@@ -5,6 +5,7 @@ public class Response {
     private int code;
     private String description;
     private Person person;
+    private Customer customer;
     private String token;
 
     public Response(int code, String description) {
@@ -22,6 +23,12 @@ public class Response {
         this.code = code;
         this.description = description;
         this.person = person;
+    }
+
+    public Response(int code, String description, Customer customer) {
+        this.code = code;
+        this.description = description;
+        this.customer = customer;
     }
 
     public int getCode() {

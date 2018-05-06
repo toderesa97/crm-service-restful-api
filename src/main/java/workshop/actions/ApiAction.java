@@ -3,7 +3,9 @@ package workshop.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import workshop.model.CryptoUtility;
+import workshop.model.Customer;
 import workshop.model.Person;
+import workshop.repositories.DatabaseCustomerRepository;
 import workshop.repositories.DatabasePersonRepository;
 
 import java.security.NoSuchAlgorithmException;
@@ -11,29 +13,32 @@ import java.util.List;
 
 @Service
 public class ApiAction {
-    private DatabasePersonRepository dbRepo;
+    private DatabasePersonRepository personRepository;
+    private DatabaseCustomerRepository customerRepository;
     private PersonFilterer personFilterer;
 
     @Autowired
-    public ApiAction(DatabasePersonRepository dbRepo, PersonFilterer personFilterer) {
-        this.dbRepo =dbRepo;
+    public ApiAction(DatabasePersonRepository personRepository, DatabaseCustomerRepository customerRepository,
+                     PersonFilterer personFilterer) {
+        this.personRepository = personRepository;
         this.personFilterer = personFilterer;
+        this.customerRepository = customerRepository;
     }
 
     public List<Person> execute() {
-        return dbRepo.findAll();
+        return personRepository.findAll();
     }
 
     public boolean insert (Person person) {
-        return dbRepo.save(person) != null;
+        return personRepository.save(person) != null;
     }
 
     public void remove(String username) {
-        dbRepo.delete(new Person(username));
+        personRepository.delete(new Person(username));
     }
 
     public Person getPerson(String username) {
-        return dbRepo.findOne(username);
+        return personRepository.findOne(username);
     }
 
     public String getToken (String username) {
@@ -53,18 +58,18 @@ public class ApiAction {
     }
 
     public Person findByToken (String token) {
-        return dbRepo.findByToken(token);
+        return personRepository.findByToken(token);
     }
 
     public boolean userExist(String username) {
-        return dbRepo.exists(username);
+        return personRepository.exists(username);
     }
 
     public void updateToken (String username, String token) {
-        Person person = dbRepo.findOne(username);
+        Person person = personRepository.findOne(username);
         person.setToken(token);
-        dbRepo.delete(username);
-        dbRepo.save(person);
+        personRepository.delete(username);
+        personRepository.save(person);
     }
 
     public boolean isAdmin(String token) {
@@ -72,4 +77,15 @@ public class ApiAction {
         return person != null && person.isAdmin();
     }
 
+    public boolean IsRegisteredUser(String token) {
+        return token != null && personRepository.findByToken(token) != null;
+    }
+
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
+    }
+
+    public boolean addCustomer(Customer customer) {
+        return customerRepository.save(customer) != null;
+    }
 }

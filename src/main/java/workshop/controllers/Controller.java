@@ -9,18 +9,32 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RestController
-public class PersonController {
+public class Controller {
 
     private ApiAction action;
 
     @Autowired
-    public PersonController(ApiAction apiAction) {
+    public Controller(ApiAction apiAction) {
         this.action = apiAction;
     }
 
-    @GetMapping("/api/people")
-    public List<Person> findAll() {
-        return action.execute();
+    @RequestMapping(method=RequestMethod.POST, value = "/api/customers")
+    public List<Customer> findAllCustomers (@RequestBody Request request) {
+        if ( ! action.IsRegisteredUser(request.getToken())) {
+            return null;
+        }
+        return action.getAllCustomers();
+    }
+
+    @RequestMapping(method=RequestMethod.POST, value = "/api/customers/add")
+    public Response addCustomer (@RequestBody Request request) {
+        if ( ! action.IsRegisteredUser(request.getToken())) {
+            return new Response(400, "Forbidden");
+        }
+        if (! action.addCustomer(request.getCustomer())) {
+            return null;
+        }
+        return new Response(200, "OK", request.getCustomer());
     }
 
     @RequestMapping(method=RequestMethod.POST, value = "/login")
@@ -54,7 +68,7 @@ public class PersonController {
         if (action.insert(personToBeAdded)) {
             return new Response(200, "OK", request.getPerson());
         } else {
-            return new Response(500, "Error whilst inserting", null);
+            return new Response(500, "Error whilst inserting");
         }
     }
 
