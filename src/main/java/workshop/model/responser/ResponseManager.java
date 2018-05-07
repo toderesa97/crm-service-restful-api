@@ -16,6 +16,7 @@ public class ResponseManager {
         if (instancesAlreadyLoaded) {
         } else {
             loadResponses();
+            instancesAlreadyLoaded = true;
             return responses.get(responseType);
         }
         return null;
