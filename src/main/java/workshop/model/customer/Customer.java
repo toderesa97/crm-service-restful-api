@@ -1,9 +1,9 @@
-package workshop.model;
+package workshop.model.customer;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name="customer")
+@Table(name="customer", schema = "public")
 public class Customer {
 
     @Id
@@ -12,6 +12,7 @@ public class Customer {
     private String photourl;
     private String name;
     private String surname;
+    private String last_person_who_modified;
 
     public Customer() {
 
@@ -55,4 +56,13 @@ public class Customer {
     public long getId() {
         return id;
     }
+
+    public String getLast_person_who_modified() {
+        return last_person_who_modified;
+    }
+
+    public void setLast_person_who_modified(String last_person_who_modified) {
+        this.last_person_who_modified = last_person_who_modified;
+    }
+
 }

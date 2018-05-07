@@ -1,10 +1,10 @@
-package workshop.model;
+package workshop.model.user;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name="person")
-public class Person {
+@Table(name="user", schema = "public")
+public class User {
     @Id
     private final String username;
     private final String name;
@@ -13,13 +13,13 @@ public class Person {
     private String role;
     private String last_person_who_modified;
 
-    public Person() {
+    public User() {
         username = "";
         name = "";
         token = "";
     }
 
-    public Person(String username) {
+    public User(String username) {
         this.username = username;
         name = "";
     }
@@ -40,7 +40,7 @@ public class Person {
         return role.equals("ADMIN");
     }
 
-    public Person(String username, String name, String pass, String role, String last_person_who_modified) {
+    public User(String username, String name, String pass, String role, String last_person_who_modified) {
         this.username = username;
         this.name = name;
         password = pass;

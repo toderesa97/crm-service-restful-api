@@ -1,11 +1,11 @@
-DROP TABLE IF EXISTS person;
-CREATE TABLE person
+DROP TABLE IF EXISTS user;
+CREATE TABLE user
 (
   ID        SERIAL PRIMARY KEY NOT NULL,
   NAME      VARCHAR(200)       NOT NULL
 );
 
-INSERT INTO person(ID, NAME)
+INSERT INTO user(ID, NAME)
 VALUES
   (1, 'Jose'),
   (2, 'Yonay')

@@ -3,82 +3,87 @@ package workshop.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import workshop.model.CryptoUtility;
-import workshop.model.Customer;
-import workshop.model.Person;
+import workshop.model.customer.Customer;
+import workshop.model.user.User;
 import workshop.repositories.DatabaseCustomerRepository;
-import workshop.repositories.DatabasePersonRepository;
+import workshop.repositories.DatabaseUserRepository;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Service
 public class ApiAction {
-    private DatabasePersonRepository personRepository;
+
+    private DatabaseUserRepository userRepository;
     private DatabaseCustomerRepository customerRepository;
     private PersonFilterer personFilterer;
 
     @Autowired
-    public ApiAction(DatabasePersonRepository personRepository, DatabaseCustomerRepository customerRepository,
+    public ApiAction(DatabaseUserRepository userRepository, DatabaseCustomerRepository customerRepository,
                      PersonFilterer personFilterer) {
-        this.personRepository = personRepository;
+        this.userRepository = userRepository;
         this.personFilterer = personFilterer;
         this.customerRepository = customerRepository;
     }
 
-    public List<Person> execute() {
-        return personRepository.findAll();
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
-    public boolean insert (Person person) {
-        return personRepository.save(person) != null;
+    public boolean addUser(User user) {
+        return userRepository.save(user) != null;
     }
 
-    public void remove(String username) {
-        personRepository.delete(new Person(username));
+    public void removeUserByUsername(String username) {
+        userRepository.delete(new User(username));
     }
 
-    public Person getPerson(String username) {
-        return personRepository.findOne(username);
+    public User getUserByUsername(String username) {
+        return userRepository.findOne(username);
     }
 
     public String getToken (String username) {
-        return getPerson(username).getToken();
+        return getUserByUsername(username).getToken();
     }
 
-    public boolean validCredentials(String username, String password, String authenticationMethod) {
+    public boolean validCredentials(String username, String password) {
         try {
-            if (authenticationMethod != null && authenticationMethod.equals("digested")) {
-                return getPerson(username).getPassword().equals(password);
-            } else {
-                return getPerson(username).getPassword().equals(CryptoUtility.getDigest("SHA-256", password));
-            }
+            return getUserByUsername(username).getPassword().equals(CryptoUtility.getDigest("SHA-256", password));
         } catch (NoSuchAlgorithmException | NullPointerException e) {
             return false;
         }
     }
 
-    public Person findByToken (String token) {
-        return personRepository.findByToken(token);
+    public User findByToken(String token) {
+        return userRepository.findByToken(token);
     }
 
     public boolean userExist(String username) {
-        return personRepository.exists(username);
+        return userRepository.exists(username);
     }
 
     public void updateToken (String username, String token) {
-        Person person = personRepository.findOne(username);
-        person.setToken(token);
-        personRepository.delete(username);
-        personRepository.save(person);
+        User user = userRepository.findOne(username);
+        user.setToken(token);
+        userRepository.delete(username);
+        userRepository.save(user);
     }
 
     public boolean isAdmin(String token) {
-        Person person = findByToken (token);
-        return person != null && person.isAdmin();
+        User user = findByToken(token);
+        return user != null && user.isAdmin();
     }
 
-    public boolean IsRegisteredUser(String token) {
-        return token != null && personRepository.findByToken(token) != null;
+    public boolean isRegisteredUser(String token) {
+        return token == null || userRepository.findByToken(token) == null;
+    }
+
+    public void removeCustomer (long id) {
+        customerRepository.delete((int) id);
+    }
+
+    public Customer findCustomerById (long id) {
+        return customerRepository.findOne((int) id);
     }
 
     public List<Customer> getAllCustomers() {

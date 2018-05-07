@@ -1,10 +1,13 @@
-package workshop.model;
+package workshop.model.responser;
+
+import workshop.model.customer.Customer;
+import workshop.model.user.User;
 
 public class Response {
 
     private int code;
     private String description;
-    private Person person;
+    private User user;
     private Customer customer;
     private String token;
 
@@ -13,16 +16,16 @@ public class Response {
         this.description = description;
     }
 
-    public Response(int code, String description, String token, Person person) {
+    public Response(int code, String description, String token, User user) {
         this.code = code;
         this.description = description;
         this.token = token;
     }
 
-    public Response(int code, String description, Person person) {
+    public Response(int code, String description, User user) {
         this.code = code;
         this.description = description;
-        this.person = person;
+        this.user = user;
     }
 
     public Response(int code, String description, Customer customer) {
@@ -43,8 +46,8 @@ public class Response {
         return description;
     }
 
-    public Person getPerson() {
-        return person;
+    public User getUser() {
+        return user;
     }
 
     @Override
