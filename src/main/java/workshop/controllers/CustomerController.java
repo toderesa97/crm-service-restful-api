@@ -5,7 +5,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import workshop.actions.ApiAction;
+import workshop.actions.CustomerAction;
+import workshop.actions.UserAction;
 import workshop.model.customer.Customer;
 import workshop.model.customer.CustomerRequest;
 import workshop.model.responser.Response;
@@ -17,56 +18,80 @@ import java.util.List;
 @RestController
 public class CustomerController {
 
-    private ApiAction action;
+    private CustomerAction customerAction;
+    private UserAction userAction;
 
     @Autowired
-    public CustomerController(ApiAction apiAction) {
-        action = apiAction;
+    public CustomerController(CustomerAction customerAction, UserAction userAction) {
+        this.userAction = userAction;
+        this.customerAction = customerAction;
     }
 
     @RequestMapping(method=RequestMethod.POST, value = "/api/customers")
     public List<Customer> findAllCustomers (@RequestBody CustomerRequest request) {
-        if (action.isRegisteredUser(request.getToken())) {
-            return null;
+        if (userAction.isRegisteredUser(request.getToken())) {
+            return customerAction.getAllCustomers();
         }
-        return action.getAllCustomers();
+        return null;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/api/customers/get")
     public Response findCustomer(@RequestBody CustomerRequest customerRequest) {
-        if (action.isRegisteredUser(customerRequest.getToken())) {
+        if (! userAction.isRegisteredUser(customerRequest.getToken())) {
             return ResponseManager.getResponse(ResponseType.FORBIDDEN);
         }
         Customer wantedCustomer = null;
         try {
-            wantedCustomer = action.findCustomerById(customerRequest.getCustomer().getId());
+            wantedCustomer = customerAction.findCustomerById(customerRequest.getCustomer().getId());
         } catch (NullPointerException ignored) {
         }
-        return ResponseManager.getResponse(ResponseType.SUCCESS);
+        return ResponseManager.getResponse(ResponseType.SUCCESS, wantedCustomer);
     }
 
     @RequestMapping(method=RequestMethod.POST, value = "/api/customers/add")
     public Response addCustomer (@RequestBody CustomerRequest request) {
-        if (action.isRegisteredUser(request.getToken())) {
+        String token = request.getToken();
+        if (! userAction.isRegisteredUser(token)) {
             return ResponseManager.getResponse(ResponseType.FORBIDDEN);
         }
-        if (! action.addCustomer(request.getCustomer())) {
-            ResponseManager.getResponse(ResponseType.INTERNAL_ERROR);
+        Customer new_customer = request.getCustomer();
+        if (new_customer == null) {
+            return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
         }
-        return ResponseManager.getResponse(ResponseType.SUCCESS);
+        new_customer.setLast_person_who_modified(userAction.findByToken(token).getUsername());
+        if (customerAction.addCustomer(new_customer)) {
+            return ResponseManager.getResponse(ResponseType.SUCCESS);
+        }
+        return ResponseManager.getResponse(ResponseType.INTERNAL_ERROR);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "api/customers/remove")
     public Response removeCustomer (@RequestBody CustomerRequest customerRequest) {
-        if (action.isRegisteredUser(customerRequest.getToken())) {
+        if (! userAction.isRegisteredUser(customerRequest.getToken())) {
             return ResponseManager.getResponse(ResponseType.FORBIDDEN);
         }
         try {
-            action.removeCustomer(customerRequest.getCustomer().getId());
+            customerAction.removeCustomer(customerRequest.getCustomer().getId());
         } catch (NullPointerException npe) {
             return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
         }
         return ResponseManager.getResponse(ResponseType.SUCCESS);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "api/customers/update")
+    public Response editCustomer (@RequestBody CustomerRequest customerRequest) {
+        if (! userAction.isRegisteredUser(customerRequest.getToken())) {
+            return ResponseManager.getResponse(ResponseType.FORBIDDEN);
+        }
+        Customer customer = customerRequest.getCustomer();
+        if (customer == null) {
+            return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
+        }
+        String lastUserWhoModified = userAction.findByToken(customerRequest.getToken()).getUsername();
+        if (customerAction.updateCustomer(customer, lastUserWhoModified)) {
+            return ResponseManager.getResponse(ResponseType.SUCCESS);
+        }
+        return ResponseManager.getResponse(ResponseType.INTERNAL_ERROR);
     }
 
 }

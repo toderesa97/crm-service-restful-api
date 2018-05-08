@@ -12,18 +12,15 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Service
-public class ApiAction {
+public class UserAction {
 
     private DatabaseUserRepository userRepository;
-    private DatabaseCustomerRepository customerRepository;
     private PersonFilterer personFilterer;
 
     @Autowired
-    public ApiAction(DatabaseUserRepository userRepository, DatabaseCustomerRepository customerRepository,
-                     PersonFilterer personFilterer) {
+    public UserAction(DatabaseUserRepository userRepository, PersonFilterer personFilterer) {
         this.userRepository = userRepository;
         this.personFilterer = personFilterer;
-        this.customerRepository = customerRepository;
     }
 
     public List<User> getAllUsers() {
@@ -42,11 +39,11 @@ public class ApiAction {
         return userRepository.findOne(username);
     }
 
-    public String getToken (String username) {
+    public String getToken(String username) {
         return getUserByUsername(username).getToken();
     }
 
-    public boolean validCredentials(String username, String password) {
+    public boolean validUserCredentials(String username, String password) {
         try {
             return getUserByUsername(username).getPassword().equals(CryptoUtility.getDigest("SHA-256", password));
         } catch (NoSuchAlgorithmException | NullPointerException e) {
@@ -62,7 +59,7 @@ public class ApiAction {
         return userRepository.exists(username);
     }
 
-    public void updateToken (String username, String token) {
+    public void updateToken(String username, String token) {
         User user = userRepository.findOne(username);
         user.setToken(token);
         userRepository.delete(username);
@@ -75,22 +72,7 @@ public class ApiAction {
     }
 
     public boolean isRegisteredUser(String token) {
-        return token == null || userRepository.findByToken(token) == null;
+        return token != null && userRepository.findByToken(token) != null;
     }
 
-    public void removeCustomer (long id) {
-        customerRepository.delete((int) id);
-    }
-
-    public Customer findCustomerById (long id) {
-        return customerRepository.findOne((int) id);
-    }
-
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
-    }
-
-    public boolean addCustomer(Customer customer) {
-        return customerRepository.save(customer) != null;
-    }
 }

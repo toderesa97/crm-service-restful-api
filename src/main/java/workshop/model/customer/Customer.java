@@ -9,7 +9,7 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String photourl;
+    private String photoURL;
     private String name;
     private String surname;
     private String last_person_who_modified;
@@ -19,7 +19,7 @@ public class Customer {
     }
 
     public Customer(String name, String surname, String photoURL) {
-        this.photourl = photoURL;
+        this.photoURL = photoURL;
         this.name = name;
         this.surname = surname;
     }
@@ -30,11 +30,11 @@ public class Customer {
     }
 
     public String getPhotoURL() {
-        return photourl;
+        return photoURL;
     }
 
     public void setPhotoURL(String photoURL) {
-        this.photourl = photoURL;
+        this.photoURL = photoURL;
     }
 
     public String getName() {
@@ -63,6 +63,10 @@ public class Customer {
 
     public void setLast_person_who_modified(String last_person_who_modified) {
         this.last_person_who_modified = last_person_who_modified;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
 }

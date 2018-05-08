@@ -1,5 +1,8 @@
 package workshop.model.responser;
 
+import workshop.model.customer.Customer;
+import workshop.model.user.User;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +25,46 @@ public class ResponseManager {
         return null;
     }
 
+    public static Response getResponse(ResponseType responseType, Customer customer) {
+        Response response = null;
+        try {
+            response = (Response) getResponse(responseType).clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        if (response != null) {
+            response.setCustomer(customer);
+        }
+        return response;
+    }
+
+    public static Response getResponse(ResponseType responseType, User user) {
+        Response response = null;
+        try {
+            response = (Response) getResponse(responseType).clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        if (response != null) {
+            response.setUser(user);
+        }
+        return response;
+    }
+
+    public static Response getResponse(ResponseType responseType, String token) {
+        Response response = null;
+        try {
+            response = (Response) getResponse(responseType).clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        if (response != null) {
+            //response.setUser(user);
+            response.setToken(token);
+        }
+        return response;
+    }
+
     private static void loadResponses() {
         Response success = new Response(200, "OK");
         responses.put(ResponseType.SUCCESS, success);
@@ -36,8 +79,8 @@ public class ResponseManager {
         responses.put(ResponseType.CREATED, created);
         Response internalError = new Response(500, "INTERNAL ERROR");
         responses.put(ResponseType.INTERNAL_ERROR, internalError);
-        Response confict = new Response(409, "CONFLICT: probably due to duplicate records");
-        responses.put(ResponseType.CONFLICT, confict);
+        Response conflict = new Response(409, "CONFLICT: probably due to duplicate records");
+        responses.put(ResponseType.CONFLICT, conflict);
     }
 
 

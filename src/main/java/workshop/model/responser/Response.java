@@ -3,7 +3,7 @@ package workshop.model.responser;
 import workshop.model.customer.Customer;
 import workshop.model.user.User;
 
-public class Response {
+public class Response implements Cloneable {
 
     private int code;
     private String description;
@@ -16,38 +16,48 @@ public class Response {
         this.description = description;
     }
 
-    public Response(int code, String description, String token, User user) {
-        this.code = code;
-        this.description = description;
-        this.token = token;
-    }
+    public Response() {
 
-    public Response(int code, String description, User user) {
-        this.code = code;
-        this.description = description;
-        this.user = user;
-    }
-
-    public Response(int code, String description, Customer customer) {
-        this.code = code;
-        this.description = description;
-        this.customer = customer;
     }
 
     public int getCode() {
         return code;
     }
 
-    public String getToken() {
-        return token;
+    public void setCode(int code) {
+        this.code = code;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public User getUser() {
         return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override
@@ -56,5 +66,10 @@ public class Response {
         if (o == null || getClass() != o.getClass()) return false;
         Response response = (Response) o;
         return getCode() == response.getCode();
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }
