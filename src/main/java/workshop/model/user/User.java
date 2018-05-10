@@ -1,5 +1,7 @@
 package workshop.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -32,10 +34,12 @@ public class User {
         this.last_person_who_modified = last_person_who_modified;
     }
 
+    @JsonIgnore
     public String getRole() {
         return role;
     }
 
+    @JsonIgnore
     public boolean isAdmin () {
         return role.equals("ADMIN");
     }
@@ -56,6 +60,7 @@ public class User {
         return name;
     }
 
+    @JsonIgnore
     public String getToken() {
         return token;
     }
@@ -64,6 +69,7 @@ public class User {
         this.token = token;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }

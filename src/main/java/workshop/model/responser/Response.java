@@ -1,14 +1,9 @@
 package workshop.model.responser;
 
-import workshop.model.customer.Customer;
-import workshop.model.user.User;
-
 public class Response implements Cloneable {
 
     private int code;
     private String description;
-    private User user;
-    private Customer customer;
     private String token;
 
     public Response(int code, String description) {
@@ -34,22 +29,6 @@ public class Response implements Cloneable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
     }
 
     public String getToken() {

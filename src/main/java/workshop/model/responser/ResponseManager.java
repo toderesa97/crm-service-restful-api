@@ -28,20 +28,20 @@ public class ResponseManager {
     public static Response getResponse(ResponseType responseType, Customer customer) {
         Response response = null;
         try {
-            response = (Response) getResponse(responseType).clone();
+            response = ((CustomerResponse) (getResponse(responseType).clone()));
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
         if (response != null) {
-            response.setCustomer(customer);
+            ((CustomerResponse) response).setCustomer(customer);
         }
         return response;
     }
 
     public static Response getResponse(ResponseType responseType, User user) {
-        Response response = null;
+        UserResponse response = null;
         try {
-            response = (Response) getResponse(responseType).clone();
+            response = (UserResponse) getResponse(responseType).clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
@@ -70,7 +70,7 @@ public class ResponseManager {
         responses.put(ResponseType.SUCCESS, success);
         Response forbidden = new Response(403, "FORBIDDEN");
         responses.put(ResponseType.FORBIDDEN, forbidden);
-        Response notFound = new Response(404, "NOT FOUND");
+        Response notFound = new Response(404, "NOT FOUND: the id may not exist ");
         responses.put(ResponseType.NOT_FOUND, notFound);
         Response unauthorized = new Response(401, "UNAUTHORIZED: " +
                 "tried to operate on a protected resource without providing the proper authentication credentials");
