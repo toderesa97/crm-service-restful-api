@@ -11,6 +11,12 @@ public class Response implements Cloneable {
         this.description = description;
     }
 
+    public Response(int code, String description, String token) {
+        this.code = code;
+        this.description = description;
+        this.token = token;
+    }
+
     public Response() {
 
     }

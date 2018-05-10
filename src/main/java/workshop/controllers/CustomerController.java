@@ -37,62 +37,60 @@ public class CustomerController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/api/customers/get")
-    public CustomerResponse findCustomer(@RequestBody CustomerRequest customerRequest) {
+    public Response findCustomer(@RequestBody CustomerRequest customerRequest) {
         if (! userAction.isRegisteredUser(customerRequest.getToken())) {
-            return (CustomerResponse) ResponseManager.getResponse(ResponseType.FORBIDDEN);
+            return ResponseManager.getResponse(ResponseType.FORBIDDEN);
         }
         Customer wantedCustomer = null;
         try {
             wantedCustomer = customerAction.findCustomerById(customerRequest.getCustomer().getId());
         } catch (NullPointerException ignored) {
         }
-        return (CustomerResponse) ResponseManager.getResponse(ResponseType.SUCCESS, wantedCustomer);
+        return ResponseManager.getResponse(ResponseType.SUCCESS, wantedCustomer);
     }
 
     @RequestMapping(method=RequestMethod.POST, value = "/api/customers/add")
-    public CustomerResponse addCustomer (@RequestBody CustomerRequest request) {
+    public Response addCustomer (@RequestBody CustomerRequest request) {
         String token = request.getToken();
         if (! userAction.isRegisteredUser(token)) {
-            return (CustomerResponse) ResponseManager.getResponse(ResponseType.FORBIDDEN);
+            return ResponseManager.getResponse(ResponseType.FORBIDDEN);
         }
         Customer new_customer = request.getCustomer();
         if (new_customer == null) {
-            return (CustomerResponse) ResponseManager.getResponse(ResponseType.BAD_REQUEST);
+            return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
         }
         new_customer.setLast_person_who_modified(userAction.findByToken(token).getUsername());
         if (customerAction.addCustomer(new_customer)) {
-            return (CustomerResponse) ResponseManager.getResponse(ResponseType.SUCCESS);
+            return ResponseManager.getResponse(ResponseType.SUCCESS);
         }
-        return (CustomerResponse) ResponseManager.getResponse(ResponseType.INTERNAL_ERROR);
+        return ResponseManager.getResponse(ResponseType.INTERNAL_ERROR);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "api/customers/remove")
-    public CustomerResponse removeCustomer (@RequestBody CustomerRequest customerRequest) {
-        if (! userAction.isRegisteredUser(customerRequest.getToken())) {
-            return (CustomerResponse) ResponseManager.getResponse(ResponseType.FORBIDDEN);
-        }
+    public Response removeCustomer (@RequestBody CustomerRequest customerRequest) {
+        if (! userAction.isRegisteredUser(customerRequest.getToken()))
+            return ResponseManager.getResponse(ResponseType.FORBIDDEN);
         try {
             customerAction.removeCustomer(customerRequest.getCustomer().getId());
         } catch (NullPointerException npe) {
-            return (CustomerResponse) ResponseManager.getResponse(ResponseType.BAD_REQUEST);
+            return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
         }
-        return (CustomerResponse) ResponseManager.getResponse(ResponseType.SUCCESS);
+        return ResponseManager.getResponse(ResponseType.SUCCESS);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "api/customers/update")
-    public CustomerResponse editCustomer (@RequestBody CustomerRequest customerRequest) {
-        if (! userAction.isRegisteredUser(customerRequest.getToken())) {
+    public Response editCustomer (@RequestBody CustomerRequest customerRequest) {
+        if (! userAction.isRegisteredUser(customerRequest.getToken()))
             return (CustomerResponse) ResponseManager.getResponse(ResponseType.FORBIDDEN);
-        }
         Customer customer = customerRequest.getCustomer();
         if (customer == null) {
-            return (CustomerResponse) ResponseManager.getResponse(ResponseType.BAD_REQUEST);
+            return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
         }
         String lastUserWhoModified = userAction.findByToken(customerRequest.getToken()).getUsername();
         if (customerAction.updateCustomer(customer, lastUserWhoModified)) {
-            return (CustomerResponse) ResponseManager.getResponse(ResponseType.SUCCESS);
+            return ResponseManager.getResponse(ResponseType.SUCCESS);
         }
-        return (CustomerResponse) ResponseManager.getResponse(ResponseType.NOT_FOUND);
+        return ResponseManager.getResponse(ResponseType.NOT_FOUND);
     }
 
 }

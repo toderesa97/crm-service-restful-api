@@ -26,43 +26,18 @@ public class ResponseManager {
     }
 
     public static Response getResponse(ResponseType responseType, Customer customer) {
-        Response response = null;
-        try {
-            response = ((CustomerResponse) (getResponse(responseType).clone()));
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        if (response != null) {
-            ((CustomerResponse) response).setCustomer(customer);
-        }
-        return response;
+        Response response = getResponse(responseType);
+        return new CustomerResponse(response.getCode(), response.getDescription(), customer);
     }
 
     public static Response getResponse(ResponseType responseType, User user) {
-        UserResponse response = null;
-        try {
-            response = (UserResponse) getResponse(responseType).clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        if (response != null) {
-            response.setUser(user);
-        }
-        return response;
+        Response response = getResponse(responseType);
+        return new UserResponse(response.getCode(), response.getDescription(), user);
     }
 
     public static Response getResponse(ResponseType responseType, String token) {
-        Response response = null;
-        try {
-            response = (Response) getResponse(responseType).clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        if (response != null) {
-            //response.setUser(user);
-            response.setToken(token);
-        }
-        return response;
+        Response response = getResponse(responseType);
+        return new Response(response.getCode(), response.getDescription(), token);
     }
 
     private static void loadResponses() {
