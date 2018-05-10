@@ -11,30 +11,7 @@ public class UserResponse extends Response implements Cloneable {
         this.user = user;
     }
 
-    public UserResponse(User user) {
-        this.user = user;
-    }
-
-    public UserResponse() {
-
-    }
-
     public User getUser() {
         return user;
     }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
 }

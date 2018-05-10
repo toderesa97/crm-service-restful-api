@@ -10,6 +10,7 @@ import workshop.model.responser.ResponseType;
 import workshop.model.user.User;
 import workshop.model.user.UserRequest;
 
+import javax.validation.constraints.Null;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
@@ -30,7 +31,6 @@ public class UserController {
             userAction.updateToken(loginCredentials.getUsername(), token);
             return ResponseManager.getResponse(ResponseType.SUCCESS, token);
         }
-
         return ResponseManager.getResponse(ResponseType.UNAUTHORIZED);
     }
 
