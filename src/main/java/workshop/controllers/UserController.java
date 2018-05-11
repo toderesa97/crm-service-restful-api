@@ -2,6 +2,7 @@ package workshop.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import secure.CryptoUtility;
 import workshop.actions.UserAction;
 import workshop.model.*;
 import workshop.model.responser.Response;
@@ -10,7 +11,6 @@ import workshop.model.responser.ResponseType;
 import workshop.model.user.User;
 import workshop.model.user.UserRequest;
 
-import javax.validation.constraints.Null;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class UserController {
     }
 
     @RequestMapping(method=RequestMethod.POST, value = "/login")
-    public Response login(@RequestBody LoginCredentials loginCredentials) throws NoSuchAlgorithmException {
+    public Response login(@RequestBody LoginCredentials loginCredentials) {
         if (userAction.validUserCredentials(loginCredentials.getUsername(), loginCredentials.getPassword())) {
             String token = CryptoUtility.getRandomToken();
             userAction.updateToken(loginCredentials.getUsername(), token);
@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @RequestMapping(method=RequestMethod.POST, value="/api/users/add")
-    public Response insert(@RequestBody UserRequest userRequest) throws NoSuchAlgorithmException {
+    public Response insert(@RequestBody UserRequest userRequest) {
         if (userRequest.getToken() == null) return ResponseManager.getResponse(ResponseType.FORBIDDEN);
         if (! userAction.isAdmin(userRequest.getToken()) ) {
             return ResponseManager.getResponse(ResponseType.FORBIDDEN);
@@ -44,7 +44,7 @@ public class UserController {
             return ResponseManager.getResponse(ResponseType.CONFLICT);
         }
         User userToBeAdded = userRequest.getUser();
-        userToBeAdded.setPassword(CryptoUtility.getDigest("SHA-256", userRequest.getUser().getPassword()));
+        userToBeAdded.setPassword(CryptoUtility.getDigest(userRequest.getUser().getPassword()));
         userToBeAdded.setLast_person_who_modified(userAction.findByToken(userRequest.getToken()).getUsername());
 
         if (userAction.addUser(userToBeAdded)) {

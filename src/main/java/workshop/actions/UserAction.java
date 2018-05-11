@@ -2,10 +2,8 @@ package workshop.actions;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import workshop.model.CryptoUtility;
-import workshop.model.customer.Customer;
+import secure.CryptoUtility;
 import workshop.model.user.User;
-import workshop.repositories.DatabaseCustomerRepository;
 import workshop.repositories.DatabaseUserRepository;
 
 import java.security.NoSuchAlgorithmException;
@@ -45,8 +43,8 @@ public class UserAction {
 
     public boolean validUserCredentials(String username, String password) {
         try {
-            return getUserByUsername(username).getPassword().equals(CryptoUtility.getDigest("SHA-256", password));
-        } catch (NoSuchAlgorithmException | NullPointerException e) {
+            return CryptoUtility.check(getUserByUsername(username).getPassword(), password);
+        } catch (NullPointerException e) {
             return false;
         }
     }

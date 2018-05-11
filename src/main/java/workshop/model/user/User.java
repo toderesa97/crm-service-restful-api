@@ -34,9 +34,12 @@ public class User {
         this.last_person_who_modified = last_person_who_modified;
     }
 
-    @JsonIgnore
     public String getRole() {
         return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @JsonIgnore
@@ -69,7 +72,6 @@ public class User {
         this.token = token;
     }
 
-    @JsonIgnore
     public String getPassword() {
         return password;
     }
