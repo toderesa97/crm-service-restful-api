@@ -7,6 +7,6 @@ import workshop.model.user.User;
 @Repository
 public interface DatabaseUserRepository extends JpaRepository<User,String> {
 
-    User findByToken(String token);
+    User findUserByToken(String token);
 
 }

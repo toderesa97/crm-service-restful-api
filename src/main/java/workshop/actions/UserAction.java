@@ -3,10 +3,10 @@ package workshop.actions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import secure.CryptoUtility;
+import workshop.model.responser.ResponseManager;
+import workshop.model.responser.ResponseType;
 import workshop.model.user.User;
 import workshop.repositories.DatabaseUserRepository;
-
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Service
@@ -50,7 +50,7 @@ public class UserAction {
     }
 
     public User findByToken(String token) {
-        return userRepository.findByToken(token);
+        return userRepository.findUserByToken(token);
     }
 
     public boolean userExist(String username) {
@@ -66,11 +66,38 @@ public class UserAction {
 
     public boolean isAdmin(String token) {
         User user = findByToken(token);
-        return user != null && user.isAdmin();
+        return user != null && user.isAdmin() && tokenIsNotExpired(user, token);
+    }
+
+    private boolean tokenIsNotExpired(User user, String token) {
+        return true;
     }
 
     public boolean isRegisteredUser(String token) {
-        return token != null && userRepository.findByToken(token) != null;
+        return token != null && userRepository.findUserByToken(token) != null;
     }
 
+    public boolean updateUser(User userToEdit, String username, String lastUserWhoModified) {
+        User currentUser = getUserByUsername(username);
+        if (currentUser == null) {
+            return false;
+        }
+        if (userToEdit.getPassword() != null) {
+            currentUser.setPassword(CryptoUtility.getDigest(userToEdit.getPassword()));
+        }
+        String name;
+        if ((name = userToEdit.getName()) != null) {
+            if (! name.isEmpty()) currentUser.setName(name);
+        }
+        String role;
+        if ((role = userToEdit.getRole()) != null) {
+            if (role.equals("ADMIN") || role.equals("USER")) {
+                currentUser.setRole(role);
+            } else {
+                return false;
+            }
+        }
+        currentUser.setLast_person_who_modified(lastUserWhoModified);
+        return userRepository.save(currentUser) != null;
+    }
 }

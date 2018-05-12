@@ -8,11 +8,15 @@ import javax.persistence.*;
 @Table(name="user", schema = "public")
 public class User {
     @Id
-    private final String username;
-    private final String name;
+    private String username;
+    @Column(nullable = false)
+    private String name;
+    @Column(nullable = false)
     private String password;
     private String token;
+    @Column(nullable = false)
     private String role;
+    @Column(nullable = false)
     private String last_person_who_modified;
 
     public User() {
@@ -47,14 +51,6 @@ public class User {
         return role.equals("ADMIN");
     }
 
-    public User(String username, String name, String pass, String role, String last_person_who_modified) {
-        this.username = username;
-        this.name = name;
-        password = pass;
-        this.role = role;
-        this.last_person_who_modified = last_person_who_modified;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -78,5 +74,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

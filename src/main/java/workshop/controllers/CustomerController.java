@@ -1,24 +1,27 @@
 package workshop.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import workshop.actions.CustomerAction;
 import workshop.actions.UserAction;
 import workshop.model.customer.Customer;
 import workshop.model.customer.CustomerRequest;
-import workshop.model.responser.CustomerResponse;
 import workshop.model.responser.Response;
 import workshop.model.responser.ResponseManager;
 import workshop.model.responser.ResponseType;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 public class CustomerController {
 
+    private final String CUSTOMER_PATH_IMAGES = "C:\\Users\\Public\\Pictures";
     private CustomerAction customerAction;
     private UserAction userAction;
 
@@ -34,6 +37,20 @@ public class CustomerController {
             return customerAction.getAllCustomers();
         }
         return null;
+    }
+
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public Response handleFormUpload(@RequestParam("file") MultipartFile file) {
+        if (!file.isEmpty()) {
+            try {
+                BufferedImage src = ImageIO.read(new ByteArrayInputStream(file.getBytes()));
+                File destination = new File(CUSTOMER_PATH_IMAGES + "\\" + file.getOriginalFilename());
+                ImageIO.write(src, "png", destination);
+            } catch (IOException e) {
+                return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
+            }
+        }
+        return ResponseManager.getResponse(ResponseType.SUCCESS);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/api/customers/get")
@@ -81,7 +98,7 @@ public class CustomerController {
     @RequestMapping(method = RequestMethod.POST, value = "api/customers/update")
     public Response editCustomer (@RequestBody CustomerRequest customerRequest) {
         if (! userAction.isRegisteredUser(customerRequest.getToken()))
-            return (CustomerResponse) ResponseManager.getResponse(ResponseType.FORBIDDEN);
+            return ResponseManager.getResponse(ResponseType.FORBIDDEN);
         Customer customer = customerRequest.getCustomer();
         if (customer == null) {
             return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
