@@ -40,17 +40,32 @@ public class CustomerController {
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public Response handleFormUpload(@RequestParam("file") MultipartFile file) {
-        if (!file.isEmpty()) {
-            try {
-                BufferedImage src = ImageIO.read(new ByteArrayInputStream(file.getBytes()));
-                File destination = new File(CUSTOMER_PATH_IMAGES + "\\" + file.getOriginalFilename());
-                ImageIO.write(src, "png", destination);
-            } catch (IOException e) {
-                return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
-            }
+    public Response uploadCustomerImage(@RequestParam("file") MultipartFile file,
+                                        @RequestParam("token") String token,
+                                        @RequestParam("customerId") Long customerId) {
+        if ( !userAction.isRegisteredUser(token) )
+            return ResponseManager.getResponse(ResponseType.FORBIDDEN);
+        if (customerId == null || file == null || file.isEmpty())
+            return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
+        if (! customerAction.customerExist(customerId))
+            return ResponseManager.getResponse(ResponseType.NOT_FOUND);
+        String path = CUSTOMER_PATH_IMAGES + "\\" +String.valueOf(customerId)+"_"+file.getOriginalFilename();
+        if (saveImage(path, file)) {
+            customerAction.updateImageCustomer(customerId,
+                    userAction.findByToken(token).getUsername(), path);
         }
         return ResponseManager.getResponse(ResponseType.SUCCESS);
+    }
+
+    private boolean saveImage(String path, MultipartFile file) {
+        try {
+            BufferedImage src = ImageIO.read(new ByteArrayInputStream(file.getBytes()));
+            File destination = new File(path);
+            ImageIO.write(src, "png", destination);
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/api/customers/get")
@@ -59,10 +74,11 @@ public class CustomerController {
             return ResponseManager.getResponse(ResponseType.FORBIDDEN);
         }
         Customer wantedCustomer = null;
-        try {
-            wantedCustomer = customerAction.findCustomerById(customerRequest.getCustomer().getId());
-        } catch (NullPointerException ignored) {
-        }
+        Customer clientRequest = customerRequest.getCustomer();
+        if (clientRequest != null && clientRequest.getId() != 0)
+            wantedCustomer = customerAction.findCustomerById(clientRequest.getId());
+        else
+            return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
         return ResponseManager.getResponse(ResponseType.SUCCESS, wantedCustomer);
     }
 
@@ -100,14 +116,12 @@ public class CustomerController {
         if (! userAction.isRegisteredUser(customerRequest.getToken()))
             return ResponseManager.getResponse(ResponseType.FORBIDDEN);
         Customer customer = customerRequest.getCustomer();
-        if (customer == null) {
+        if (customer == null)
             return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
-        }
         String lastUserWhoModified = userAction.findByToken(customerRequest.getToken()).getUsername();
         if (customerAction.updateCustomer(customer, lastUserWhoModified)) {
             return ResponseManager.getResponse(ResponseType.SUCCESS);
         }
         return ResponseManager.getResponse(ResponseType.NOT_FOUND);
     }
-
 }

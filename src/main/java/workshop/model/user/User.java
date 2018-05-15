@@ -18,6 +18,7 @@ public class User {
     private String role;
     @Column(nullable = false)
     private String last_person_who_modified;
+    private String photoURL;
 
     public User() {
         username = "";
@@ -82,5 +83,13 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setPhotoURL(String photoURL) {
+        this.photoURL = photoURL;
+    }
+
+    public String getPhotoURL() {
+        return photoURL;
     }
 }

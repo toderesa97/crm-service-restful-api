@@ -18,6 +18,7 @@ public class ResponseManager {
             put(ResponseType.CREATED, () -> new Response(201, "CREATED"));
             put(ResponseType.INTERNAL_ERROR, () ->new Response(500, "INTERNAL ERROR"));
             put(ResponseType.CONFLICT, () -> new Response(409, "CONFLICT: probably due to duplicate records"));
+            put(ResponseType.BAD_REQUEST, () -> new Response(400, "BAD REQUEST: there are missing fields that are required"));
         }
     };
 

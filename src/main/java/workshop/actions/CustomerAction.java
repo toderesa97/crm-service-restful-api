@@ -27,6 +27,10 @@ public class CustomerAction {
         return customerRepository.findOne(id);
     }
 
+    public boolean customerExist(long id) {
+        return findCustomerById(id) != null;
+    }
+
     public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
     }
@@ -52,6 +56,13 @@ public class CustomerAction {
         customer_to_edit.setId(customer.getId());
         customer_to_edit.setLast_person_who_modified(lastUserWhoModified);
         return customerRepository.save(customer_to_edit) != null;
+    }
+
+    public void updateImageCustomer(Long customerId, String lastPersonWhoModified, String path) {
+        Customer customer = findCustomerById(customerId);
+        customer.setPhotoURL(path);
+        customer.setLast_person_who_modified(lastPersonWhoModified);
+        customerRepository.save(customer);
     }
 
 }
