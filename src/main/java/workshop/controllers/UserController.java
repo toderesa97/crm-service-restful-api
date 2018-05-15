@@ -53,10 +53,6 @@ public class UserController {
 
     @RequestMapping(method=RequestMethod.POST, value="/api/users")
     public List<User> getAllUsers(@RequestBody UserRequest userRequest) {
-        String token = userRequest.getToken();
-        if ( token == null ) {
-            ResponseManager.getResponse(ResponseType.BAD_REQUEST);
-        }
         if ( userAction.isAdmin(userRequest.getToken()) ) {
             return userAction.getAllUsers();
         } else {
@@ -66,7 +62,6 @@ public class UserController {
 
     @RequestMapping(method=RequestMethod.POST, value="/api/users/remove")
     public Response removeUser(@RequestBody UserRequest userRequest) {
-        System.out.println(userRequest.getToken());
         if ( userAction.isAdmin(userRequest.getToken()) ) {
             userAction.removeUserByUsername(userRequest.getUser().getUsername());
             return ResponseManager.getResponse(ResponseType.SUCCESS);
@@ -78,9 +73,6 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "api/users/get")
     public Response getUser(@RequestBody UserRequest userRequest) {
         if ( userAction.isAdmin(userRequest.getToken()) ) {
-            if (userRequest.getToken() == null) {
-                return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
-            }
             User wanted = userAction.getUserByUsername(userRequest.getUser().getUsername());
             if (wanted == null)
                 return ResponseManager.getResponse(ResponseType.NOT_FOUND);

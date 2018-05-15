@@ -30,7 +30,7 @@ public class UserAction {
     }
 
     public void removeUserByUsername(String username) {
-        userRepository.delete(new User(username));
+        userRepository.delete(username);
     }
 
     public User getUserByUsername(String username) {
