@@ -3,6 +3,7 @@ package workshop.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import os.FileManager;
 import workshop.actions.CustomerAction;
 import workshop.actions.UserAction;
 import workshop.model.customer.Customer;
@@ -10,18 +11,11 @@ import workshop.model.customer.CustomerRequest;
 import workshop.model.responser.Response;
 import workshop.model.responser.ResponseManager;
 import workshop.model.responser.ResponseType;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 @RestController
 public class CustomerController {
 
-    private final String CUSTOMER_PATH_IMAGES = "C:\\Users\\Public\\Pictures";
     private CustomerAction customerAction;
     private UserAction userAction;
 
@@ -49,23 +43,12 @@ public class CustomerController {
             return ResponseManager.getResponse(ResponseType.BAD_REQUEST);
         if (! customerAction.customerExist(customerId))
             return ResponseManager.getResponse(ResponseType.NOT_FOUND);
-        String path = CUSTOMER_PATH_IMAGES + "\\" +String.valueOf(customerId)+"_"+file.getOriginalFilename();
-        if (saveImage(path, file)) {
+        String path;
+        if ((path=FileManager.saveImage(customerId, file)) != null) {
             customerAction.updateImageCustomer(customerId,
                     userAction.findByToken(token).getUsername(), path);
         }
         return ResponseManager.getResponse(ResponseType.SUCCESS);
-    }
-
-    private boolean saveImage(String path, MultipartFile file) {
-        try {
-            BufferedImage src = ImageIO.read(new ByteArrayInputStream(file.getBytes()));
-            File destination = new File(path);
-            ImageIO.write(src, "png", destination);
-        } catch (IOException e) {
-            return false;
-        }
-        return true;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/api/customers/get")

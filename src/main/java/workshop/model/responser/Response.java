@@ -1,6 +1,6 @@
 package workshop.model.responser;
 
-public class Response implements Cloneable {
+public class Response {
 
     private int code;
     private String description;
@@ -51,10 +51,5 @@ public class Response implements Cloneable {
         if (o == null || getClass() != o.getClass()) return false;
         Response response = (Response) o;
         return getCode() == response.getCode();
-    }
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 }
