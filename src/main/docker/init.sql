@@ -1,11 +1,3 @@
-DROP TABLE IF EXISTS user;
-CREATE TABLE user
-(
-  ID        SERIAL PRIMARY KEY NOT NULL,
-  NAME      VARCHAR(200)       NOT NULL
-);
-
-INSERT INTO user(ID, NAME)
-VALUES
-  (1, 'Jose'),
-  (2, 'Yonay')
+INSERT INTO user (username, name, password, token, role, last_person_who_modified, photourl)
+        values ('admin', 'Administrator', '$2a$10$tA9oOolm/lp8zcdLzg/6gOWcNONQG2RE4hQwTMKGYQiisjCv6h8ye',
+        '', 'ADMIN', 'admin', '');
